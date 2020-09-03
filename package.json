@@ -2,6 +2,7 @@
   "name": "epcc-ref-store",
   "version": "1.0.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@moltin/sdk": "^3.23.0",
     "@types/node": "^12.0.0",
