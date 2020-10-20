@@ -1,11 +1,11 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+
 import Modal from 'react-responsive-modal';
 import { useFormik } from 'formik';
 import { submitQuote } from './service';
 import { useTranslation } from './app-state';
-import { createRegistrationUrl, createPasswordResetUrl} from './routes';
+
 import { ReactComponent as CloseIcon } from './images/icons/ic_close.svg';
 import './QuoteFormModal.scss';
 
@@ -25,7 +25,7 @@ export const QuoteFormModal: React.FC<AppModalQuoteMainProps> = (props) => {
   const { handleModalClose, openModal, inquiredProduct: { product, imgURL } } = props;
   const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
-  const [isQuoteRequestFailed, setIsQuoteRequestFailed] = useState(false);
+
   const [submissionText, setSubmissionText] = useState('');
 
   const initialValues:FormValues = {
