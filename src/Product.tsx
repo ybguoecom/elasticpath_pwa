@@ -8,6 +8,7 @@ import { useTranslation, useCurrency, useCartData } from './app-state';
 import { isProductAvailable } from './helper';
 import { Availability } from './Availability';
 import { VariationsSelector } from './VariationsSelector';
+import { QuoteFormModal } from "./QuoteFormModal";
 
 import './Product.scss';
 
@@ -22,6 +23,7 @@ export const Product: React.FC = () => {
   const { selectedLanguage } = useTranslation();
   const { selectedCurrency } = useCurrency();
   const { updateCartItems } = useCartData();
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
 
   const [product] = useResolve(
     async () => loadProductBySlug(productSlug, selectedLanguage, selectedCurrency),
@@ -49,6 +51,20 @@ export const Product: React.FC = () => {
       .then(() => {
         updateCartItems()
     })
+  };
+  
+  const handleQuoteRequest = () => {
+    setIsQuoteModalOpen(true)
+  /*
+    const mcart = localStorage.getItem('mcart') || '';
+    addToCart(mcart, productId)
+      .then(() => {
+        updateCartItems()
+    })
+    */
+  };
+   const handleCloseQuoteModal = () => {
+    setIsQuoteModalOpen(false)
   };
 
   const handleNextImageClicked = () => {
@@ -96,14 +112,23 @@ export const Product: React.FC = () => {
                 ? <VariationsSelector product={product} onChange={handleVariationChange} />
                 : ''
             }
-            <div className="product__moltinbtncontainer">
-              {productId &&
+           
+            <span className="product__moltinbtncontainer">
+              {productId && product.purchasable &&
                 <button
                   className="epbtn --secondary"
+                  style={{marginRight:"1em"}}
                   onClick={handleAddToCart}
                 >{t('add-to-cart')}</button>
               }
-            </div>
+              {productId && product.quotable &&
+                <button
+                  className="epbtn --secondary"
+                  style={{marginRight:"1em"}}
+                  onClick={handleQuoteRequest}
+                >{t('request-a-quote')}</button>
+              }
+            </span>
             <div className="product__description">
               {product.description}
             </div>
@@ -111,6 +136,9 @@ export const Product: React.FC = () => {
               <SocialShare name={product.name} description={product.description} imageHref={productImageHrefs?.[0]} />
             </div>
           </div>
+          {productId && product.quotable &&
+             <QuoteFormModal openModal={isQuoteModalOpen} handleModalClose={handleCloseQuoteModal} inquiredProduct={{product,imgURL: productImageHrefs?.[0]}} />
+          }
         </div>
       ) : (
         <div className="loader" />

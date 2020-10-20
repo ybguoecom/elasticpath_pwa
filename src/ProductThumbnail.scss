@@ -6,12 +6,12 @@
   display: inline-block;
   text-align: left;
   margin-bottom: 40px;
-
+    
   #{$block}__imgcontainer {
     width: 160px;
     height: 160px;
   }
-
+         
   #{$block}__name {
     margin-top: 10px;
     font-size: $sizeInitial;
@@ -57,4 +57,14 @@
       width: 180px;
     }
   }
+}
+
+.productgrid
+{
+    @extend .productthumbnail;
+    align-items: center;
+    flex-direction:column;
+    display:flex;
+    margin-top: 10px;
+    margin-bottom: 0px;
 }

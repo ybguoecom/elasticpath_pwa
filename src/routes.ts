@@ -8,12 +8,14 @@ import ShippingAndReturns from './ShippingAndReturns';
 import TermsAndConditions from './TermsAndConditions';
 import { CompareProducts } from './CompareProducts';
 import { RegistrationForm } from "./RegistrationForm";
+import { PasswordForm } from "./forgotPasswordForm";
 import { MyAccount } from './MyAccount';
 import { Profile } from './Profile';
 import { Address } from './Address';
 import { Search } from './Search';
 import { PurchaseHistory } from './PurchaseHistory';
 import { OrderDetails } from './OrderDetails';
+import { PasswordResetForm } from './PasswordResetForm';
 
 interface RouteConfig {
   path: string;
@@ -31,6 +33,8 @@ export const routes: RouteConfig[] = [
   { exact: true, path: '/termsandconditions', component: TermsAndConditions, },
   { exact: true, path: '/compare-products', component: CompareProducts, },
   { exact: true, path: '/registration', component: RegistrationForm, },
+  { exact: true, path: '/forgot_password', component: PasswordForm,},
+  { exact: true, path: '/password_reset/:token', component: PasswordResetForm,},
   { exact: false, path: '/account', component: MyAccount, },
   { exact: false, path: '/search', component: Search, },
   { exact: true, path: '/orderdetails/:orderId', component: OrderDetails, },
@@ -77,3 +81,8 @@ export function createPurchaseHistoryUrl(): string {
 export function createSearchUrl(): string {
   return `/search`;
 }
+
+export function createPasswordResetUrl(): string {
+  return `/forgot_password`;
+}
+

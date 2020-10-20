@@ -177,5 +177,13 @@
   "item": "îîţéɱ",
   "items": "îîţééɱš",
   "add-item": "ÅÅðð ååñöţţĥéŕ îîţéɱ",
-  "remove-item": "ŔŔéɱööṽé ööñé îîţéɱ"
+  "remove-item": "ŔŔéɱööṽé ööñé îîţéɱ",
+  "pw-reset-request-page-title": "réinitialiser le mot de passe",
+  "pw-reset-request-submit": "Envoyer la demande",
+  "pw-reset-page-title": "Réinitialisation du mot de passe",
+  "pw-reset-reset-button": "Réinitialiser",
+  "pw-reset-success": "Votre mot de passe a été réinitialisé avec succès.",
+  "pw-reset-error": "Il y avait une erreur(code:{code}).",
+  "forgot-password": "Mot de passe oublié",
+  "pw-reset-request-sent":  "Si nous trouvons votre e-mail dans notre système, un lien de réinitialisation vous sera envoyé."
 }

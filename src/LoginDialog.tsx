@@ -1,11 +1,13 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Modal from 'react-responsive-modal';
 import { useFormik } from 'formik';
 import { login } from './service';
 import { useCustomerData, useTranslation } from './app-state';
-import { createRegistrationUrl } from './routes';
+import { createRegistrationUrl, createPasswordResetUrl} from './routes';
 import { ReactComponent as CloseIcon } from './images/icons/ic_close.svg';
+
 
 import './LoginDialog.scss';
 
@@ -23,11 +25,16 @@ export const LoginDialog: React.FC<AppModalLoginMainProps> = (props) => {
   const { handleModalClose, openModal } = props;
   const { setCustomerData } = useCustomerData();
   const { t } = useTranslation();
+  //const history = useHistory();
   const registrationUrl = createRegistrationUrl();
+  const forgetPasswordUrl = createPasswordResetUrl();
 
   const [failedLogin, setFailedLogin] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
+  //const [isRequestSent, setisRequestSent] = useState(false);
+  const [Keyvalue, setKeyValue] = useState(Date.now().toString());
+  
+  
   const initialValues:FormValues = {
     emailField: '',
     passwordField: '',
@@ -43,7 +50,7 @@ export const LoginDialog: React.FC<AppModalLoginMainProps> = (props) => {
     }
 
     return errors;
-  };
+  }
 
   const {handleSubmit, handleChange, resetForm, values, errors} = useFormik({
     initialValues,
@@ -65,14 +72,17 @@ export const LoginDialog: React.FC<AppModalLoginMainProps> = (props) => {
   });
 
   const registerNewUser = () => {
+
+    setKeyValue(Date.now().toString())
+    console.log(Keyvalue)
     handleModalClose();
-  };
+  }
 
   const handleClose = () => {
     setFailedLogin(false);
     handleModalClose();
     resetForm();
-  };
+  }
 
   return (
     <Modal open={openModal} onClose={handleClose} classNames={{ modal: 'logindialog' }} showCloseIcon={false}>
@@ -113,11 +123,14 @@ export const LoginDialog: React.FC<AppModalLoginMainProps> = (props) => {
               </div>
             </div>
             <div className="epform__group --btn-container">
-              <button className="epbtn --secondary" id="login_modal_login_button" type="submit" disabled={isLoading}>
+              <button className="epbtn --primary" id="login_modal_login_button" type="submit" disabled={isLoading}>
                 {t('login')}
               </button>
-              <Link to={registrationUrl} className="epbtn --secondary" id="login_modal_register_button" onClick={registerNewUser}>
+              <Link to={registrationUrl} className="epbtn --primary" id="login_modal_register_button" onClick={registerNewUser}>
                 {t('register')}
+              </Link>
+              <Link to={{pathname: forgetPasswordUrl, state: { isRequestSent: false, time: Keyvalue }}}  replace className="epbtn --primary" id="login_modal_reset_button" onClick={registerNewUser}>
+                {t('forgot-password')}
               </Link>
             </div>
           </form>

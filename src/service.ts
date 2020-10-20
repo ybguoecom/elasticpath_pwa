@@ -1,7 +1,21 @@
 import * as moltin from '@moltin/sdk';
 import { config } from './config';
 
+export interface StandardAPIResponse {
+    statusCode: number,
+    message: string
+}
+
 const MoltinGateway = moltin.gateway;
+
+
+declare module '@moltin/sdk' {
+  interface Product {
+    purchasable: boolean;
+    quotable: boolean;
+  }
+
+}
 
 export async function loadEnabledCurrencies(): Promise<moltin.Currency[]> {
   const moltin = MoltinGateway({ host: config.endpointURL, client_id: config.clientId });
@@ -214,5 +228,87 @@ export async function payment(payment: object, orderId: string) {
   const moltin = MoltinGateway({ host: config.endpointURL, client_id: config.clientId });
   await moltin.Orders.Payment(orderId, payment)
 }
+
+export async function resetPassword(email: string, password: string, token: string):  Promise<any> {
+      const resetData = JSON.stringify({
+        token,
+        email,
+        password
+      });
+
+      const resp = await fetch('https://july-demo.netlify.app/.netlify/functions/reset_password',{
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'text/plain',
+          'Accept-Encoding': 'gzip, deflate',
+          Accept: '*/*'
+        },
+        body: resetData
+      }).catch(function(error) {
+          throw error
+      });
+     
+     if (resp.status >= 200 && resp.status < 300) {
+        return resp;
+      } else {
+        let response = await resp.json()
+        throw new Error(response.message||"there was an error");
+      }
+      
+}
+
+
+export async function getResetLink(email: string):  Promise<any> {
+ const requestBody = JSON.stringify({email});
+ 
+      const resp = await fetch('https://july-demo.netlify.app/.netlify/functions/forgot_password',{
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'text/plain',
+          'Accept-Encoding': 'gzip, deflate',
+          Accept: '*/*'
+        },
+        body: requestBody
+      } ).catch(function(error) {
+        throw error
+      });
+      if (resp.status >= 200 && resp.status < 300) {
+        return resp;
+      } else {
+        let response = await resp.json()
+        throw new Error(response.message||"there was an error");
+      }
+  
+}
+
+export async function submitQuote(name: string, email: string, product_inquired: string, order_quantity:number):  Promise<any> {
+ const requestBody = JSON.stringify({data: { name, email,order_quantity,status:"request" }, product_inquired });
+ 
+      const resp = await fetch('https://ep-demo-quote.vercel.app/quotes',{
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Accept-Language': 'en-US,en;q=0.9',
+          Accept: '*/*'
+          
+        },
+        body: requestBody
+      }).catch(function(error) {
+         throw error
+      });
+      if (resp.status >= 200 && resp.status < 300) {
+        return resp;
+      } else {
+        let response = await resp.json()
+        throw new Error(response.message||"there was an error");
+      }
+      
+  
+}
+
 
 
