@@ -8,13 +8,12 @@ export interface StandardAPIResponse {
 
 const MoltinGateway = moltin.gateway;
 
-
 declare module '@moltin/sdk' {
   interface Product {
     purchasable: boolean;
     quotable: boolean;
+    sub_id: string;
   }
-
 }
 
 export async function loadEnabledCurrencies(): Promise<moltin.Currency[]> {
@@ -297,6 +296,56 @@ export async function submitQuote(name: string, email: string, product_inquired:
           
         },
         body: requestBody
+      }).catch(function(error) {
+         throw error
+      });
+      if (resp.status >= 200 && resp.status < 300) {
+        return resp;
+      } else {
+        let response = await resp.json()
+        throw new Error(response.message||"there was an error");
+      }
+      
+  
+}
+
+export async function createSubscription(ep_cus_id: string,  ep_prod_id: string, quantity:number):  Promise<any> {
+ const requestBody = JSON.stringify({ ep_cus_id, ep_prod_id, quantity: quantity||1 });
+ 
+      const resp = await fetch('https://ajwehhv1rb.execute-api.eu-west-1.amazonaws.com/ztd/stripe/subscription_create',{
+        method: 'POST',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Accept-Language': 'en-US,en;q=0.9',
+          Accept: '*/*'
+        },
+        body: requestBody
+      }).catch(function(error) {
+         throw error
+      });
+      if (resp.status >= 200 && resp.status < 300) {
+        return resp;
+      } else {
+        let response = await resp.json()
+        throw new Error(response.message||"there was an error");
+      }
+      
+  
+}
+
+export async function getProductWithCustomerToken(productID: string, customerToken: string):  Promise<any> {
+    
+      const resp = await fetch(`https://ep-demo-quote.vercel.app/products/${productID}`,{
+        method: 'GET',
+        mode: 'cors',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept-Encoding': 'gzip, deflate, br',
+          'Accept-Language': 'en-US,en;q=0.9',
+          Accept: '*/*', ...customerToken&&customerToken.length>0?{'X-MOLTIN-CUSTOMER-TOKEN':customerToken}:{}
+        }
       }).catch(function(error) {
          throw error
       });

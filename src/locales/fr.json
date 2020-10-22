@@ -185,5 +185,17 @@
   "pw-reset-success": "Votre mot de passe a été réinitialisé avec succès.",
   "pw-reset-error": "Il y avait une erreur(code:{code}).",
   "forgot-password": "Mot de passe oublié",
-  "pw-reset-request-sent":  "Si nous trouvons votre e-mail dans notre système, un lien de réinitialisation vous sera envoyé."
+  "pw-reset-request-sent":  "Si nous trouvons votre e-mail dans notre système, un lien de réinitialisation vous sera envoyé.",
+  "request-a-quote": "Request a Quote",
+  "quote-quantity": "Quantity",
+  "error_property_gt_x": "{property} must be greater than {x}",
+  "quote-created": "Your quote request was submitted successfully",
+  "quote-error": "There was an error",
+  "subscribe-button-ok": "Subscribe",
+  "subscribe-button-login-required": "Login to subscribe",
+  "subscribe-form-title": "Start Subscription",
+  "subscribe-form-submit": "Confirm",
+  "subscription-ep-order-id": "Reference ID",
+  "subscription-stripe-subscription-id": "Subscription ID",
+  "subscription-stripe-message": "You subscription has been created successfully. An email will be sent to you shortly."
 }

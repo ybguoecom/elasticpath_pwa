@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { useResolve, useProductImages } from './hooks';
-import { addToCart, loadProductBySlug } from './service';
+import { addToCart, loadProductBySlug, getProductWithCustomerToken } from './service';
 import { CompareCheck } from './CompareCheck';
 import { SocialShare } from './SocialShare';
-import { useTranslation, useCurrency, useCartData } from './app-state';
+import { useTranslation, useCurrency, useCartData, useCustomerData } from './app-state';
 import { isProductAvailable } from './helper';
 import { Availability } from './Availability';
 import { VariationsSelector } from './VariationsSelector';
 import { QuoteFormModal } from "./QuoteFormModal";
+import { SubscriptionFormModal } from "./SubscriptionFormModal";
+import { LoginDialog } from "./LoginDialog";
 
 import './Product.scss';
 
@@ -19,11 +21,14 @@ interface ProductParams {
 
 export const Product: React.FC = () => {
   const { productSlug } = useParams<ProductParams>();
+  const { token, isLoggedIn } = useCustomerData();
   const { t } = useTranslation();
   const { selectedLanguage } = useTranslation();
   const { selectedCurrency } = useCurrency();
   const { updateCartItems } = useCartData();
-  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [isActionModalOpen, setIsActionModalOpen] = useState(false);
+  const [specialPrice, setSpecialPrice] = useState({ formatted: null , amount: null, currency: null});
+  
 
   const [product] = useResolve(
     async () => loadProductBySlug(productSlug, selectedLanguage, selectedCurrency),
@@ -34,6 +39,20 @@ export const Product: React.FC = () => {
   useEffect(() => {
     product && setProductId(product.id);
   }, [product])
+  
+  useEffect(() => {
+    if(isLoggedIn) {
+        token && product && (async ()=>{
+            let specialPrice = await getProductWithCustomerToken(product.id,token)
+            specialPrice = await specialPrice.json()
+            specialPrice && specialPrice.membership_pricing && setSpecialPrice(specialPrice.membership_pricing[0].price[0])
+            })()
+    } else
+    { 
+        setSpecialPrice({ formatted: null , amount: null, currency: null})
+    }
+  }, [product,isLoggedIn,token])
+   
 
   const productImageHrefs = useProductImages(product);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -53,18 +72,14 @@ export const Product: React.FC = () => {
     })
   };
   
-  const handleQuoteRequest = () => {
-    setIsQuoteModalOpen(true)
-  /*
-    const mcart = localStorage.getItem('mcart') || '';
-    addToCart(mcart, productId)
-      .then(() => {
-        updateCartItems()
-    })
-    */
+  const handleActionRequest = () => {
+    setIsActionModalOpen(true)
+
   };
-   const handleCloseQuoteModal = () => {
-    setIsQuoteModalOpen(false)
+
+  const handleCloseActionModal = () => {
+    setIsActionModalOpen(false)
+
   };
 
   const handleNextImageClicked = () => {
@@ -100,9 +115,15 @@ export const Product: React.FC = () => {
             <h1 className="product__name">
               {product.name}
             </h1>
-            <div className="product__price">
-              {product.meta.display_price.without_tax.formatted}
+            <div className="product__price" style={ specialPrice.formatted?{ textDecorationLine: 'line-through' }:{}} >
+              {product.meta.display_price.without_tax.formatted}   
             </div>
+            { specialPrice.formatted &&
+              <div className="product__price" style={{"color":"red"}}>
+              YOUR PRICE: { specialPrice.formatted}
+               </div>
+              
+            }
             <Availability available={isProductAvailable(product)} />
             <div className="product__comparecheck">
               <CompareCheck product={product} />
@@ -125,8 +146,20 @@ export const Product: React.FC = () => {
                 <button
                   className="epbtn --secondary"
                   style={{marginRight:"1em"}}
-                  onClick={handleQuoteRequest}
+                  onClick={handleActionRequest}
                 >{t('request-a-quote')}</button>
+              }
+              {productId && product.sub_id && (isLoggedIn?
+                <button
+                  className="epbtn --secondary"
+                  style={{marginRight:"1em"}}
+                  onClick={handleActionRequest}
+                >{t('subscribe-button-ok')}</button>: <div>
+                <button className="epbtn --secondary" type="button" onClick={handleActionRequest}>
+                    {t('subscribe-button-login-required')}
+                </button>
+                <LoginDialog openModal={isActionModalOpen} handleModalClose={handleCloseActionModal} />
+                </div>)
               }
             </span>
             <div className="product__description">
@@ -137,7 +170,10 @@ export const Product: React.FC = () => {
             </div>
           </div>
           {productId && product.quotable &&
-             <QuoteFormModal openModal={isQuoteModalOpen} handleModalClose={handleCloseQuoteModal} inquiredProduct={{product,imgURL: productImageHrefs?.[0]}} />
+             <QuoteFormModal openModal={isActionModalOpen} handleModalClose={handleCloseActionModal} inquiredProduct={{product,imgURL: productImageHrefs?.[0]}} />
+          }
+          {productId && product?.sub_id && isLoggedIn &&
+             <SubscriptionFormModal openModal={isActionModalOpen} handleModalClose={handleCloseActionModal} inquiredProduct={{product,imgURL: productImageHrefs?.[0]}}  />
           }
         </div>
       ) : (
